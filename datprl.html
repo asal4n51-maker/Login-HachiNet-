@@ -1,0 +1,249 @@
+import React, { useMemo, useState } from 'react';
+import {
+  Check,
+  Copy,
+  FileText,
+  Image as ImageIcon,
+  MapPin,
+  Power,
+  Search,
+  ShieldAlert,
+} from 'lucide-react';
+import type { Client } from '../../types/isp.ts';
+
+interface DataPelangganViewProps {
+  clients: Client[];
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  bukaMaps: (client: Client) => void;
+  bukaFoto: (client: Client) => void;
+  bukaInvoice: (client: Client) => void;
+  handleToggleStatus: (client: Client) => void;
+  handleTogglePayment: (client: Client) => void;
+  onCopySuccess: (label: string) => void;
+}
+
+export default function DataPelangganView({
+  clients,
+  searchQuery,
+  setSearchQuery,
+  bukaMaps,
+  bukaFoto,
+  bukaInvoice,
+  handleToggleStatus,
+  handleTogglePayment,
+  onCopySuccess,
+}: DataPelangganViewProps) {
+  const [clientFilter, setClientFilter] = useState<'Semua' | 'Online' | 'Isolir' | 'Belum Lunas'>(
+    'Semua'
+  );
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const filteredClients = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return clients.filter((c) => {
+      const matchesSearch =
+        !q ||
+        c.name.toLowerCase().includes(q) ||
+        c.id.toLowerCase().includes(q) ||
+        c.snModem.toLowerCase().includes(q) ||
+        c.odp.toLowerCase().includes(q);
+      if (!matchesSearch) return false;
+      if (clientFilter === 'Online') return c.status === 'Online';
+      if (clientFilter === 'Isolir') return c.status === 'Isolir';
+      if (clientFilter === 'Belum Lunas') return c.statusBayar === 'Belum Lunas';
+      return true;
+    });
+  }, [clients, searchQuery, clientFilter]);
+
+  const handleCopyCredential = (client: Client) => {
+    const text = `${client.pppoeUser} / ${client.pppoePass}`;
+    navigator.clipboard?.writeText(text);
+    setCopiedId(client.docId);
+    onCopySuccess(`Kredensial PPPoE ${client.name}`);
+    setTimeout(() => setCopiedId(null), 1600);
+  };
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 lg:flex-row lg:items-center">
+        <div>
+          <h2 className="font-display text-xl font-extrabold text-slate-900">
+            Daftar Pelanggan Koloni Hachi Net
+          </h2>
+          <p className="mt-0.5 text-xs text-slate-500 tabular-nums">
+            Menampilkan {filteredClients.length} dari {clients.length} pelanggan terdaftar
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama, ID, SN, atau ODP..."
+              className="w-64 rounded-lg border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 outline-none focus:border-amber-500 focus:bg-white"
+            />
+          </div>
+
+          <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1">
+            {(['Semua', 'Online', 'Isolir', 'Belum Lunas'] as const).map((filterKey) => (
+              <button
+                key={filterKey}
+                type="button"
+                onClick={() => setClientFilter(filterKey)}
+                className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  clientFilter === filterKey
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {filterKey}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 overflow-x-auto">
+        {filteredClients.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <p className="text-sm font-semibold text-slate-700">
+              Tidak ada pelanggan yang sesuai dengan filter saat ini.
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              Ubah kata kunci pencarian atau reset filter status pelanggan.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setClientFilter('Semua');
+              }}
+              className="mt-4 rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Reset Filter
+            </button>
+          </div>
+        ) : (
+          <table className="w-full border-collapse text-left text-xs">
+            <thead>
+              <tr className="border-b border-slate-200 text-slate-500">
+                <th className="px-3 py-3 font-semibold">ID &amp; Nama</th>
+                <th className="px-3 py-3 font-semibold">Paket</th>
+                <th className="px-3 py-3 font-semibold">PPPoE Credential</th>
+                <th className="px-3 py-3 font-semibold">ODP / SN Modem</th>
+                <th className="px-3 py-3 font-semibold">Redaman</th>
+                <th className="px-3 py-3 font-semibold">Koneksi &amp; Tagihan</th>
+                <th className="px-3 py-3 text-right font-semibold">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredClients.map((c) => (
+                <tr key={c.docId} className="transition-colors hover:bg-slate-50/70">
+                  <td className="px-3 py-3.5">
+                    <div className="text-sm font-bold text-slate-900">{c.name}</div>
+                    <div className="mt-0.5 font-mono text-xs font-medium text-amber-700">
+                      {c.id}
+                    </div>
+                  </td>
+                  <td className="px-3 py-3.5 text-slate-700">{c.paket}</td>
+                  <td className="px-3 py-3.5">
+                    <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 font-mono text-[11px] text-slate-800">
+                      <span>
+                        {c.pppoeUser} / {c.pppoePass}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyCredential(c)}
+                        aria-label={`Salin PPPoE ${c.name}`}
+                        className="text-slate-500 hover:text-slate-900"
+                      >
+                        {copiedId === c.docId ? (
+                          <Check className="h-3 w-3 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3.5">
+                    <div className="font-semibold text-slate-800">{c.odp}</div>
+                    <div className="font-mono text-[11px] text-slate-500">{c.snModem}</div>
+                  </td>
+                  <td className="px-3 py-3.5 tabular-nums">
+                    <div className="font-mono font-semibold text-emerald-700">{c.rxPower}</div>
+                    <div className="text-[11px] text-slate-500">Temp: {c.temp}</div>
+                  </td>
+                  <td className="px-3 py-3.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStatus(c)}
+                        title="Klik untuk ubah status MikroTik (Online / Isolir)"
+                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-1 text-[11px] font-semibold transition-colors ${
+                          c.status === 'Online'
+                            ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                            : 'bg-red-50 text-red-700 hover:bg-red-100'
+                        }`}
+                      >
+                        {c.status === 'Online' ? (
+                          <Power className="h-3 w-3" />
+                        ) : (
+                          <ShieldAlert className="h-3 w-3" />
+                        )}
+                        {c.status}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTogglePayment(c)}
+                        title="Klik untuk ubah status pembayaran"
+                        className={`whitespace-nowrap rounded-md px-2 py-1 text-[11px] font-semibold transition-colors ${
+                          c.statusBayar === 'Lunas'
+                            ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                        }`}
+                      >
+                        {c.statusBayar}
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3.5 text-right">
+                    <div className="inline-flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => bukaInvoice(c)}
+                        className="inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        <FileText className="h-3 w-3" />
+                        Invoice
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => bukaMaps(c)}
+                        className="inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        <MapPin className="h-3 w-3" />
+                        Maps
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => bukaFoto(c)}
+                        className="inline-flex items-center gap-1 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        <ImageIcon className="h-3 w-3" />
+                        Foto
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
