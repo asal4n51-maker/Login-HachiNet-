@@ -1,0 +1,219 @@
+import React, { useMemo, useState } from 'react';
+import { Plus } from 'lucide-react';
+import type { Client, Tiket, TicketPriority, TicketStatus } from '../../types/isp.ts';
+
+interface TiketGangguanViewProps {
+  clients: Client[];
+  tiketList: Tiket[];
+  onCreateTicket: (payload: {
+    clientId: string;
+    kendala: string;
+    prioritas: TicketPriority;
+    teknisi: string;
+  }) => Promise<void>;
+  onUpdateTicketStatus: (id: string, status: TicketStatus) => Promise<void>;
+}
+
+export default function TiketGangguanView({
+  clients,
+  tiketList,
+  onCreateTicket,
+  onUpdateTicketStatus,
+}: TiketGangguanViewProps) {
+  const [ticketClientId, setTicketClientId] = useState(clients[0]?.id ?? '');
+  const [ticketKendala, setTicketKendala] = useState('');
+  const [ticketPrioritas, setTicketPrioritas] = useState<TicketPriority>('Sedang');
+  const [ticketTeknisi, setTicketTeknisi] = useState('Rizky Pratama');
+  const [ticketFilter, setTicketFilter] = useState<'Semua' | TicketStatus>('Semua');
+
+  const filteredTickets = useMemo(() => {
+    if (ticketFilter === 'Semua') return tiketList;
+    return tiketList.filter((t) => t.status === ticketFilter);
+  }, [tiketList, ticketFilter]);
+
+  const handleSubmitTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const selectedClient = ticketClientId || clients[0]?.id || '';
+    if (!selectedClient || !ticketKendala.trim()) return;
+    await onCreateTicket({
+      clientId: selectedClient,
+      kendala: ticketKendala,
+      prioritas: ticketPrioritas,
+      teknisi: ticketTeknisi,
+    });
+    setTicketKendala('');
+  };
+
+  return (
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6">
+        <h2 className="font-display text-lg font-extrabold text-slate-900">Buat Tiket Gangguan</h2>
+        <p className="mt-1 text-xs text-slate-500">
+          Catat keluhan koneksi, redaman tinggi, atau jadwal kunjungan teknisi.
+        </p>
+
+        <form onSubmit={handleSubmitTicket} className="mt-5 space-y-4">
+          <div>
+            <label htmlFor="tkt-client" className="mb-1.5 block text-xs font-semibold text-slate-600">
+              Pelanggan
+            </label>
+            <select
+              id="tkt-client"
+              value={ticketClientId || clients[0]?.id || ''}
+              onChange={(e) => setTicketClientId(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-amber-500"
+            >
+              {clients.map((c) => (
+                <option key={c.docId} value={c.id}>
+                  {c.id} — {c.name} ({c.odp})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                htmlFor="tkt-priority"
+                className="mb-1.5 block text-xs font-semibold text-slate-600"
+              >
+                Prioritas
+              </label>
+              <select
+                id="tkt-priority"
+                value={ticketPrioritas}
+                onChange={(e) => setTicketPrioritas(e.target.value as TicketPriority)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-amber-500"
+              >
+                <option value="Tinggi">Tinggi</option>
+                <option value="Sedang">Sedang</option>
+                <option value="Rendah">Rendah</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="tkt-tech" className="mb-1.5 block text-xs font-semibold text-slate-600">
+                Teknisi
+              </label>
+              <select
+                id="tkt-tech"
+                value={ticketTeknisi}
+                onChange={(e) => setTicketTeknisi(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-amber-500"
+              >
+                <option value="Rizky Pratama">Rizky Pratama</option>
+                <option value="Dimas Saputra">Dimas Saputra</option>
+                <option value="Fajar Nugroho">Fajar Nugroho</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="tkt-desc" className="mb-1.5 block text-xs font-semibold text-slate-600">
+              Deskripsi Kendala
+            </label>
+            <textarea
+              id="tkt-desc"
+              rows={4}
+              value={ticketKendala}
+              onChange={(e) => setTicketKendala(e.target.value)}
+              placeholder="Contoh: Lampu LOS berkedip merah di ONT pelanggan..."
+              required
+              className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 outline-none focus:border-amber-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-amber-500 px-4 py-3 text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400"
+          >
+            <Plus className="h-4 w-4" />
+            Terbitkan Tiket Gangguan
+          </button>
+        </form>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-2">
+        <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="font-display text-lg font-extrabold text-slate-900">
+              Daftar Tiket Gangguan
+            </h2>
+            <p className="text-xs text-slate-500 tabular-nums">
+              {filteredTickets.length} tiket ditampilkan
+            </p>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1">
+            {(['Semua', 'Terbuka', 'Proses', 'Selesai'] as const).map((status) => (
+              <button
+                key={status}
+                type="button"
+                onClick={() => setTicketFilter(status)}
+                className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  ticketFilter === status
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="divide-y divide-slate-100">
+          {filteredTickets.map((t) => (
+            <div
+              key={t.id}
+              className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
+            >
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="font-mono font-bold text-slate-900">{t.id}</span>
+                  <span aria-hidden="true">·</span>
+                  <span className="font-semibold text-slate-800">{t.clientName}</span>
+                  <span aria-hidden="true">·</span>
+                  <span className="font-mono text-slate-500">{t.odp}</span>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className={`font-semibold ${
+                      t.prioritas === 'Tinggi'
+                        ? 'text-red-600'
+                        : t.prioritas === 'Sedang'
+                          ? 'text-amber-700'
+                          : 'text-slate-500'
+                    }`}
+                  >
+                    Prioritas {t.prioritas}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-700">{t.kendala}</p>
+                <div className="text-xs text-slate-400">
+                  Teknisi: {t.teknisi} · Update: {t.updatedAt}
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-2">
+                <select
+                  aria-label={`Ubah status tiket ${t.id}`}
+                  value={t.status}
+                  onChange={(e) => onUpdateTicketStatus(t.id, e.target.value as TicketStatus)}
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-semibold outline-none ${
+                    t.status === 'Selesai'
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : t.status === 'Proses'
+                        ? 'border-amber-200 bg-amber-50 text-amber-800'
+                        : 'border-red-200 bg-red-50 text-red-700'
+                  }`}
+                >
+                  <option value="Terbuka">Terbuka</option>
+                  <option value="Proses">Proses</option>
+                  <option value="Selesai">Selesai</option>
+                </select>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
