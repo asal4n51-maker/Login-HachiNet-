@@ -27,238 +27,191 @@
       overflow-x: hidden;
     }
 
-    /* Overlay form yang diposisikan pas di bagian bawah kartu pada gambar */
-    .login-overlay {
+    /* Wadah transparan yang diposisikan pas menindih area form pada gambar */
+    .form-hit-area {
+      position: relative;
       width: 100%;
-      max-width: 360px;
-      margin-top: 175px;
-      padding: 8px 14px 12px;
-      border-radius: 16px;
+      max-width: 315px;
+      margin-top: 178px;
+      padding: 4px 8px;
+    }
+
+    .field-wrap {
+      position: relative;
+      width: 100%;
+      height: 36px;
+      margin-bottom: 24px;
+      border-radius: 6px;
       background: transparent;
     }
 
-    .form-group {
-      margin-bottom: 12px;
+    .field-wrap.password-wrap {
+      margin-bottom: 14px;
     }
 
-    .form-group label {
-      display: block;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #ffffff;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
-      margin-bottom: 5px;
-    }
-
-    .input-box {
-      position: relative;
-      display: flex;
-      align-items: center;
-      height: 40px;
-      border-radius: 7px;
-      background: rgba(215, 223, 232, 0.78);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-
-    .input-box:focus-within {
-      background: rgba(235, 241, 248, 0.92);
-      border-color: #60a5fa;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45);
-    }
-
-    .input-icon {
-      width: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #4b5563;
-      font-size: 14px;
-      user-select: none;
-      flex-shrink: 0;
-    }
-
-    .input-box input {
+    .transparent-input {
       width: 100%;
       height: 100%;
-      border: none;
-      background: transparent;
-      padding-right: 8px;
+      padding: 0 38px 0 34px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.01);
+      color: #0f172a;
       font-size: 13.5px;
-      color: #111827;
+      font-weight: 600;
       outline: none;
     }
 
-    .input-box input::placeholder {
-      color: #4b5563;
+    /* Saat diketik atau difokuskan, beri latar terang tipis agar teks jelas terbaca */
+    .transparent-input:focus,
+    .transparent-input:not(:placeholder-shown) {
+      background: rgba(226, 232, 240, 0.92);
+      border-color: rgba(59, 130, 246, 0.75);
     }
 
-    .toggle-pass {
-      width: 38px;
+    .transparent-input::placeholder {
+      color: transparent;
+    }
+
+    .toggle-eye-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 36px;
       height: 100%;
-      background: transparent;
       border: none;
-      color: #4b5563;
+      background: transparent;
+      color: transparent;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      flex-shrink: 0;
+      font-size: 14px;
     }
 
-    .toggle-pass:hover {
-      color: #111827;
-    }
-
-    .btn-login {
+    .submit-btn {
       width: 100%;
-      height: 42px;
-      margin-top: 10px;
-      border: 1px solid rgba(147, 197, 253, 0.35);
+      height: 38px;
+      margin-top: 2px;
+      border: none;
       border-radius: 7px;
-      background: linear-gradient(180deg, #2b6ef2 0%, #1d56cf 100%);
-      color: #ffffff;
-      font-size: 14.5px;
-      font-weight: 700;
+      background: transparent;
+      color: transparent;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(29, 86, 207, 0.5);
-      transition: transform 0.12s ease, filter 0.18s ease;
     }
 
-    .btn-login:hover {
-      filter: brightness(1.08);
+    .action-links {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn-login:active {
-      transform: scale(0.99);
-    }
-
-    .links {
-      margin-top: 14px;
-      text-align: center;
-      font-size: 12.5px;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
-    }
-
-    .forgot-link {
+    .link-hotspot {
       display: inline-block;
-      color: #e2e8f0;
-      text-decoration: underline;
-      margin-bottom: 8px;
-    }
-
-    .forgot-link:hover {
-      color: #ffffff;
-    }
-
-    .register-text {
-      color: #e2e8f0;
-    }
-
-    .register-link {
-      color: #22c55e;
-      font-weight: 700;
+      color: transparent;
       text-decoration: none;
-      margin-left: 2px;
+      font-size: 12px;
+      padding: 2px 10px;
+      cursor: pointer;
     }
 
-    .register-link:hover {
-      text-decoration: underline;
+    .link-hotspot.forgot {
+      width: 120px;
+      height: 18px;
     }
 
-    /* Penyesuaian untuk layar HP sempit */
+    .link-hotspot.register {
+      width: 165px;
+      height: 20px;
+    }
+
     @media (max-width: 420px) {
-      .login-overlay {
-        max-width: 310px;
-        margin-top: 155px;
-        padding: 6px 10px 10px;
+      .form-hit-area {
+        max-width: 285px;
+        margin-top: 162px;
       }
 
-      .input-box {
-        height: 36px;
+      .field-wrap {
+        height: 32px;
+        margin-bottom: 21px;
       }
 
-      .btn-login {
-        height: 38px;
-        font-size: 13.5px;
+      .field-wrap.password-wrap {
+        margin-bottom: 12px;
+      }
+
+      .submit-btn {
+        height: 34px;
       }
     }
   </style>
 </head>
 <body>
-  <main class="login-overlay">
+  <main class="form-hit-area">
     <form id="loginForm">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <div class="input-box">
-          <span class="input-icon" aria-hidden="true">👤</span>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Masukkan username"
-            autocomplete="username"
-            required
-          />
-        </div>
+      <div class="field-wrap">
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="transparent-input"
+          placeholder="Username"
+          autocomplete="username"
+          required
+        />
       </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="input-box">
-          <span class="input-icon" aria-hidden="true">🔒</span>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Masukkan password"
-            autocomplete="current-password"
-            required
-          />
-          <button
-            type="button"
-            class="toggle-pass"
-            id="togglePassword"
-            aria-label="Tampilkan atau sembunyikan password"
-          >
-            👁️
-          </button>
-        </div>
+      <div class="field-wrap password-wrap">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="transparent-input"
+          placeholder="Password"
+          autocomplete="current-password"
+          required
+        />
+        <button
+          type="button"
+          id="togglePassword"
+          class="toggle-eye-btn"
+          aria-label="Tampilkan atau sembunyikan password"
+        >👁️</button>
       </div>
 
-      <button type="submit" class="btn-login">Masuk Sistem</button>
+      <button type="submit" class="submit-btn" aria-label="Masuk Sistem">Masuk Sistem</button>
+
+      <div class="action-links">
+        <a href="#lupa-password" id="forgotLink" class="link-hotspot forgot">Lupa Password?</a>
+        <a href="#daftar" id="registerLink" class="link-hotspot register">Belum punya akun? Daftar</a>
+      </div>
     </form>
-
-    <div class="links">
-      <a href="#lupa-password" class="forgot-link">Lupa Password?</a>
-      <div class="register-text">
-        Belum punya akun? <a href="#daftar" class="register-link">Daftar</a>
-      </div>
-    </div>
   </main>
 
   <script>
     const toggleBtn = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     const loginForm = document.getElementById('loginForm');
+    const forgotLink = document.getElementById('forgotLink');
+    const registerLink = document.getElementById('registerLink');
 
     toggleBtn.addEventListener('click', () => {
-      const isHidden = passwordInput.type === 'password';
-      passwordInput.type = isHidden ? 'text' : 'password';
-      toggleBtn.textContent = isHidden ? '🙈' : '👁️';
+      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
     });
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
-      const password = passwordInput.value;
       alert(`Login dikirim untuk username: ${username}`);
-      // Ganti bagian ini dengan fetch('/api/login', ...) atau redirect ke halaman dashboard kamu
+    });
+
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Fitur Lupa Password diklik.');
+    });
+
+    registerLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Fitur Daftar akun baru diklik.');
     });
   </script>
 </body>
