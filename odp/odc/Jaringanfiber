@@ -1,0 +1,224 @@
+import React, { useState } from 'react';
+import { RefreshCw } from 'lucide-react';
+import type { NetworkNode, OdpUnit } from '../../types/isp.ts';
+
+interface OdpJaringanViewProps {
+  odpList: OdpUnit[];
+  networkNodes: NetworkNode[];
+  onCreateOdp: (payload: {
+    kode: string;
+    area: string;
+    tikor: string;
+    kapasitas: number;
+  }) => Promise<void>;
+  onPingNodes: () => Promise<void>;
+  isPingingNodes: boolean;
+}
+
+export default function OdpJaringanView({
+  odpList,
+  networkNodes,
+  onCreateOdp,
+  onPingNodes,
+  isPingingNodes,
+}: OdpJaringanViewProps) {
+  const [odpKode, setOdpKode] = useState('');
+  const [odpArea, setOdpArea] = useState('');
+  const [odpTikor, setOdpTikor] = useState('-6.525800, 106.802900');
+  const [odpKapasitas, setOdpKapasitas] = useState(8);
+
+  const handleSubmitOdp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!odpKode.trim() || !odpArea.trim()) return;
+    await onCreateOdp({
+      kode: odpKode,
+      area: odpArea,
+      tikor: odpTikor,
+      kapasitas: odpKapasitas,
+    });
+    setOdpKode('');
+    setOdpArea('');
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900">
+            Tambah Unit ODP Baru
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Registrasi titik distribusi Optical Distribution Point ke topologi koloni.
+          </p>
+          <form onSubmit={handleSubmitOdp} className="mt-5 space-y-4">
+            <div>
+              <label
+                htmlFor="odp-kode"
+                className="mb-1.5 block text-xs font-semibold text-slate-600"
+              >
+                Kode ODP
+              </label>
+              <input
+                id="odp-kode"
+                type="text"
+                value={odpKode}
+                onChange={(e) => setOdpKode(e.target.value)}
+                placeholder="ODP-WRS-04"
+                required
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 font-mono text-sm outline-none focus:border-amber-500"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="odp-area"
+                className="mb-1.5 block text-xs font-semibold text-slate-600"
+              >
+                Area / Wilayah
+              </label>
+              <input
+                id="odp-area"
+                type="text"
+                value={odpArea}
+                onChange={(e) => setOdpArea(e.target.value)}
+                placeholder="Warnasari Barat"
+                required
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm outline-none focus:border-amber-500"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  htmlFor="odp-kapasitas"
+                  className="mb-1.5 block text-xs font-semibold text-slate-600"
+                >
+                  Kapasitas Port
+                </label>
+                <select
+                  id="odp-kapasitas"
+                  value={odpKapasitas}
+                  onChange={(e) => setOdpKapasitas(Number(e.target.value))}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-amber-500"
+                >
+                  <option value={8}>8 Port (1:8)</option>
+                  <option value={16}>16 Port (1:16)</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="odp-tikor"
+                  className="mb-1.5 block text-xs font-semibold text-slate-600"
+                >
+                  Koordinat
+                </label>
+                <input
+                  id="odp-tikor"
+                  type="text"
+                  value={odpTikor}
+                  onChange={(e) => setOdpTikor(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2.5 font-mono text-xs outline-none focus:border-amber-500"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full whitespace-nowrap rounded-xl bg-amber-500 px-4 py-3 text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400"
+            >
+              Simpan Unit ODP
+            </button>
+          </form>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-2">
+          <h2 className="font-display text-lg font-extrabold text-slate-900">
+            Inventaris ODP Terpasang
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Pemantauan okupansi port splitter dan rata-rata redaman per wilayah
+          </p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse text-left text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500">
+                  <th className="px-3 py-3 font-semibold">Kode &amp; Area</th>
+                  <th className="px-3 py-3 font-semibold">Splitter</th>
+                  <th className="px-3 py-3 font-semibold">Okupansi Port</th>
+                  <th className="px-3 py-3 font-semibold">Redaman Avg</th>
+                  <th className="px-3 py-3 font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {odpList.map((o) => {
+                  const pct = Math.round((o.terpakai / o.kapasitas) * 100);
+                  return (
+                    <tr key={o.id}>
+                      <td className="px-3 py-3.5">
+                        <div className="font-mono font-bold text-slate-900">{o.kode}</div>
+                        <div className="text-slate-500">{o.area}</div>
+                      </td>
+                      <td className="px-3 py-3.5 font-mono text-slate-700">{o.splitter}</td>
+                      <td className="px-3 py-3.5">
+                        <div className="flex items-center gap-2 font-mono tabular-nums">
+                          <span className="font-semibold text-slate-900">
+                            {o.terpakai}/{o.kapasitas}
+                          </span>
+                          <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
+                            <div className="h-full bg-amber-500" style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3.5 font-mono font-semibold text-emerald-700 tabular-nums">
+                        {o.redamanAvg}
+                      </td>
+                      <td className="px-3 py-3.5">
+                        <span
+                          className={`rounded-md px-2 py-1 text-[11px] font-semibold ${
+                            o.status === 'Normal'
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'bg-red-50 text-red-700'
+                          }`}
+                        >
+                          {o.status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-6">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h3 className="text-base font-bold text-slate-900">Topologi Perangkat Inti</h3>
+            <p className="text-xs text-slate-500">OLT, Core Router MikroTik, dan Server Billing</p>
+          </div>
+          <button
+            type="button"
+            onClick={onPingNodes}
+            disabled={isPingingNodes}
+            className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${isPingingNodes ? 'animate-spin' : ''}`} />
+            Uji Latensi ICMP
+          </button>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {networkNodes.map((n) => (
+            <div key={n.id} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+              <div className="text-xs font-semibold text-emerald-700">{n.status}</div>
+              <div className="mt-1 text-sm font-bold text-slate-900">{n.name}</div>
+              <div className="mt-0.5 text-xs text-slate-500">{n.role}</div>
+              <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-2.5 font-mono text-xs text-slate-600 tabular-nums">
+                <span>{n.ip}</span>
+                <span>{n.ping}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
