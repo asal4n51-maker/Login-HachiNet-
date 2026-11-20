@@ -1,0 +1,219 @@
+import React from 'react';
+import { Radio } from 'lucide-react';
+import type { DetectedModem, FormRegistrasi, OdpUnit } from '../../types/isp.ts';
+
+interface RegistrasiViewProps {
+  formRegistrasi: FormRegistrasi;
+  setFormRegistrasi: React.Dispatch<React.SetStateAction<FormRegistrasi>>;
+  odpList: OdpUnit[];
+  isScanningOlt: boolean;
+  isSubmittingReg: boolean;
+  detectedModems: DetectedModem[];
+  handleScanOlt: () => void;
+  handlePilihModemScan: (modem: DetectedModem) => void;
+  handleSimpanRegistrasi: (e: React.FormEvent) => void;
+}
+
+export default function RegistrasiView({
+  formRegistrasi,
+  setFormRegistrasi,
+  odpList,
+  isScanningOlt,
+  isSubmittingReg,
+  detectedModems,
+  handleScanOlt,
+  handlePilihModemScan,
+  handleSimpanRegistrasi,
+}: RegistrasiViewProps) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-6 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="font-display text-xl font-extrabold text-slate-900">
+            Registrasi Pelanggan &amp; OLT Auto-Sync
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Scan ONU pada OLT, pilih SN Modem, dan sinkronkan otomatis ke PPPoE &amp; Simple Queue
+            MikroTik.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleScanOlt}
+          disabled={isScanningOlt}
+          className="inline-flex items-center gap-2 whitespace-nowrap shrink-0 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
+        >
+          <Radio className={`h-4 w-4 ${isScanningOlt ? 'animate-spin' : ''}`} />
+          {isScanningOlt ? 'Memindai ONU...' : 'Scan ONU Tanpa Pemilik'}
+        </button>
+      </div>
+
+      {detectedModems.length > 0 && (
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50/70 p-5">
+          <div className="mb-3 text-xs font-bold uppercase tracking-wide text-amber-900">
+            Perangkat ONU Terdeteksi (Unconfigured)
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            {detectedModems.map((m) => (
+              <div
+                key={m.sn}
+                className="flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-white px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <div className="truncate font-mono text-xs font-bold text-slate-900">{m.sn}</div>
+                  <div className="mt-0.5 text-xs text-slate-500">
+                    {m.vendor} · RX {m.rx} · {m.port}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handlePilihModemScan(m)}
+                  className="whitespace-nowrap shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400"
+                >
+                  Gunakan SN
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSimpanRegistrasi} className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div>
+          <label htmlFor="reg-name" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Nama Lengkap Pelanggan
+          </label>
+          <input
+            id="reg-name"
+            type="text"
+            value={formRegistrasi.name}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, name: e.target.value })}
+            placeholder="Contoh: Budi Santoso"
+            required
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="reg-ktp" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Nomor KTP / Identitas
+          </label>
+          <input
+            id="reg-ktp"
+            type="text"
+            value={formRegistrasi.noIdentitas}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, noIdentitas: e.target.value })}
+            placeholder="3201123456780002"
+            required
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 font-mono text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="reg-paket" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Paket Internet
+          </label>
+          <select
+            id="reg-paket"
+            value={formRegistrasi.paket}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, paket: e.target.value })}
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          >
+            <option value="10 Mbps (Rp 75.000)">10 Mbps (Rp 75.000)</option>
+            <option value="20 Mbps (Rp 100.000)">20 Mbps (Rp 100.000)</option>
+            <option value="30 Mbps (Rp 125.000)">30 Mbps (Rp 125.000)</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="reg-sn" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            SN Modem ONU / ONT
+          </label>
+          <input
+            id="reg-sn"
+            type="text"
+            value={formRegistrasi.snModem}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, snModem: e.target.value })}
+            placeholder="VSOL99887766 atau ZTEGC..."
+            required
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 font-mono text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="reg-telp" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Nomor Telepon (WhatsApp)
+          </label>
+          <input
+            id="reg-telp"
+            type="text"
+            value={formRegistrasi.telepon}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, telepon: e.target.value })}
+            placeholder="628123456789"
+            required
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 font-mono text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="reg-odp" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Unit ODP Distribusi
+          </label>
+          <select
+            id="reg-odp"
+            value={formRegistrasi.odp}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, odp: e.target.value })}
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          >
+            {odpList.map((o) => (
+              <option key={o.id} value={o.kode}>
+                {o.kode} — {o.area} ({o.terpakai}/{o.kapasitas} Port)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="reg-tikor" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Titik Koordinat (Tikor)
+          </label>
+          <input
+            id="reg-tikor"
+            type="text"
+            value={formRegistrasi.tikor}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, tikor: e.target.value })}
+            placeholder="-6.524500, 106.801500"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 font-mono text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="reg-alamat" className="mb-1.5 block text-xs font-semibold text-slate-600">
+            Alamat Lengkap
+          </label>
+          <input
+            id="reg-alamat"
+            type="text"
+            value={formRegistrasi.alamat}
+            onChange={(e) => setFormRegistrasi({ ...formRegistrasi, alamat: e.target.value })}
+            placeholder="Jl. Raya Warnasari No. 45..."
+            required
+            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-amber-500"
+          />
+        </div>
+
+        <div className="pt-2 md:col-span-2">
+          <button
+            type="submit"
+            disabled={isSubmittingReg}
+            className="w-full whitespace-nowrap rounded-xl bg-amber-500 px-6 py-3.5 text-sm font-bold text-slate-950 transition-colors hover:bg-amber-400 disabled:opacity-60"
+          >
+            {isSubmittingReg
+              ? 'Menyimpan & Sinkronisasi ke MikroTik...'
+              : 'Simpan & Sinkronkan ke MikroTik API'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
