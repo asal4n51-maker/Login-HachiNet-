@@ -12,266 +12,296 @@
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
-    html, body {
-      width: 100%;
+    body {
       min-height: 100vh;
-      background-color: #050b18;
-      background-image: url('background-hachinet.jpg');
-      background-position: center center;
-      background-repeat: no-repeat;
+      background-color: #040914;
+      /* Menggunakan gambar sebagai tekstur cahaya latar belakang */
+      background-image: 
+        radial-gradient(circle at 50% 35%, rgba(250, 204, 21, 0.12), transparent 55%),
+        linear-gradient(rgba(4, 9, 20, 0.55), rgba(4, 9, 20, 0.72)),
+        url('background-hachinet.jpg');
       background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-      overflow-x: hidden;
-    }
-
-    .login-container {
-      width: 100%;
-      max-width: 340px;
-      margin-top: 90px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Tulisan HACHI NET WARNASARI di bawah lebah */
-    .brand-title {
-      text-align: center;
-      margin-bottom: 18px;
-      user-select: none;
-    }
-
-    .brand-main {
-      font-size: 25px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      line-height: 1.08;
-      text-transform: uppercase;
-      color: #fde047;
-      text-shadow:
-        0 0 14px rgba(250, 204, 21, 0.8),
-        0 3px 10px rgba(0, 0, 0, 0.95);
-    }
-
-    .brand-sub {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 1.3px;
-      line-height: 1.15;
-      margin-top: 2px;
-      text-transform: uppercase;
+      padding: 20px;
       color: #ffffff;
-      text-shadow:
-        0 0 12px rgba(255, 255, 255, 0.45),
-        0 3px 10px rgba(0, 0, 0, 0.95);
     }
 
-    /* Area interaktif yang diposisikan pas di atas form pada gambar */
-    .form-hit-area {
-      position: relative;
+    /* Kartu Glassmorphism persis seperti bingkai di gambar referensi */
+    .glass-card {
       width: 100%;
-      max-width: 245px;
-      margin-top: 26px;
-    }
-
-    .field-wrap {
+      max-width: 380px;
+      padding: 32px 26px 28px;
+      border-radius: 22px;
+      background: linear-gradient(
+        160deg,
+        rgba(22, 34, 58, 0.68) 0%,
+        rgba(10, 17, 32, 0.82) 100%
+      );
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255, 255, 255, 0.32);
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.75),
+        inset 0 0 24px rgba(250, 204, 21, 0.12),
+        0 0 18px rgba(59, 130, 246, 0.25);
+      text-align: center;
       position: relative;
-      width: 100%;
-      height: 24px;
-      margin-bottom: 18px;
-      border-radius: 4px;
-      background: transparent;
+      overflow: hidden;
     }
 
-    .field-wrap.password-wrap {
+    /* Efek kilau cahaya emas di bagian atas kartu */
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(253, 224, 71, 0.45) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Ikon Lebah & Not Balok Bercahaya */
+    .logo-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       margin-bottom: 10px;
     }
 
-    .transparent-input {
-      width: 100%;
-      height: 100%;
-      padding: 0 28px 0 26px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.01);
-      color: #0f172a;
-      font-size: 12px;
+    .music-note {
+      font-size: 20px;
+      color: #fde047;
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.9);
+      opacity: 0.9;
+    }
+
+    .bee-badge {
+      font-size: 46px;
+      line-height: 1;
+      filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.95));
+    }
+
+    /* Judul Utama HACHI NET WARNASARI */
+    .title-main {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      line-height: 1.1;
+      color: #fef08a;
+      text-shadow:
+        0 0 16px rgba(250, 204, 21, 0.7),
+        0 2px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    .title-sub {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      line-height: 1.15;
+      color: #fde047;
+      margin-bottom: 24px;
+      text-shadow:
+        0 0 16px rgba(250, 204, 21, 0.65),
+        0 2px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Form Input */
+    .form-group {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13.5px;
       font-weight: 600;
-      outline: none;
+      color: #f1f5f9;
+      margin-bottom: 6px;
     }
 
-    .transparent-input:focus,
-    .transparent-input:not(:placeholder-shown) {
-      background: rgba(226, 232, 240, 0.92);
-      border-color: rgba(59, 130, 246, 0.75);
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      height: 42px;
+      border-radius: 8px;
+      background: rgba(203, 213, 225, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      overflow: hidden;
+      transition: all 0.2s ease;
     }
 
-    .transparent-input::placeholder {
-      color: transparent;
+    .input-wrapper:focus-within {
+      background: #ffffff;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
     }
 
-    .toggle-eye-btn {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 26px;
+    .input-icon {
+      width: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: #475569;
+      flex-shrink: 0;
+    }
+
+    .input-wrapper input {
+      width: 100%;
       height: 100%;
       border: none;
       background: transparent;
-      color: transparent;
-      cursor: pointer;
+      font-size: 14px;
+      color: #0f172a;
+      outline: none;
+      padding-right: 10px;
     }
 
-    .submit-btn {
-      width: 100%;
-      height: 25px;
-      margin-top: 2px;
+    .input-wrapper input::placeholder {
+      color: #475569;
+    }
+
+    .toggle-btn {
+      width: 40px;
+      height: 100%;
       border: none;
-      border-radius: 5px;
       background: transparent;
-      color: transparent;
       cursor: pointer;
-    }
-
-    .action-links {
-      margin-top: 4px;
+      font-size: 15px;
+      color: #475569;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 2px;
+      justify-content: center;
     }
 
-    .link-hotspot {
-      display: inline-block;
-      color: transparent;
-      text-decoration: none;
+    /* Tombol Masuk Sistem */
+    .btn-submit {
+      width: 100%;
+      height: 44px;
+      margin-top: 8px;
+      border: 1px solid rgba(147, 197, 253, 0.4);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+      transition: filter 0.15s ease, transform 0.1s ease;
     }
 
-    .link-hotspot.forgot {
-      width: 90px;
-      height: 12px;
+    .btn-submit:hover {
+      filter: brightness(1.1);
     }
 
-    .link-hotspot.register {
-      width: 130px;
-      height: 14px;
+    .btn-submit:active {
+      transform: scale(0.99);
     }
 
-    @media (max-width: 420px) {
-      .login-container {
-        margin-top: 75px;
-      }
+    /* Link Bawah */
+    .footer-links {
+      margin-top: 18px;
+      font-size: 13px;
+    }
 
-      .brand-main {
-        font-size: 22px;
-      }
+    .forgot-link {
+      display: inline-block;
+      color: #cbd5e1;
+      text-decoration: underline;
+      margin-bottom: 10px;
+    }
 
-      .brand-sub {
-        font-size: 18px;
-      }
+    .register-row {
+      color: #cbd5e1;
+    }
 
-      .form-hit-area {
-        max-width: 175px;
-        margin-top: 42px;
-      }
+    .register-row a {
+      color: #facc15;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 3px;
+    }
 
-      .field-wrap {
-        height: 18px;
-        margin-bottom: 13px;
-      }
-
-      .field-wrap.password-wrap {
-        margin-bottom: 8px;
-      }
-
-      .transparent-input {
-        font-size: 11px;
-        padding: 0 22px 0 20px;
-      }
-
-      .submit-btn {
-        height: 19px;
-      }
+    .register-row a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <main class="login-container">
-    <div class="brand-title">
-      <div class="brand-main">HACHI NET</div>
-      <div class="brand-sub">WARNASARI</div>
+  <div class="glass-card">
+    <div class="logo-header">
+      <span class="music-note">♪</span>
+      <span class="bee-badge">🐝</span>
+      <span class="music-note">♫</span>
     </div>
 
-    <div class="form-hit-area">
-      <form id="loginForm">
-        <div class="field-wrap">
+    <div class="title-main">HACHI NET</div>
+    <div class="title-sub">WARNASARI</div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
           <input
             type="text"
             id="username"
-            name="username"
-            class="transparent-input"
-            placeholder="Username"
-            autocomplete="username"
+            placeholder="Masukkan username"
             required
           />
         </div>
+      </div>
 
-        <div class="field-wrap password-wrap">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
           <input
             type="password"
             id="password"
-            name="password"
-            class="transparent-input"
-            placeholder="Password"
-            autocomplete="current-password"
+            placeholder="Masukkan password"
             required
           />
-          <button
-            type="button"
-            id="togglePassword"
-            class="toggle-eye-btn"
-            aria-label="Tampilkan atau sembunyikan password"
-          >👁️</button>
+          <button type="button" class="toggle-btn" id="togglePass" aria-label="Lihat password">
+            👁️
+          </button>
         </div>
+      </div>
 
-        <button type="submit" class="submit-btn" aria-label="Masuk Sistem">Masuk Sistem</button>
+      <button type="submit" class="btn-submit">Masuk Sistem</button>
+    </form>
 
-        <div class="action-links">
-          <a href="#lupa-password" id="forgotLink" class="link-hotspot forgot">Lupa Password?</a>
-          <a href="#daftar" id="registerLink" class="link-hotspot register">Belum punya akun? Daftar</a>
-        </div>
-      </form>
+    <div class="footer-links">
+      <a href="#lupa-password" class="forgot-link">Lupa Password?</a>
+      <div class="register-row">
+        Belum punya akun? <a href="#daftar">Daftar</a>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script>
-    const toggleBtn = document.getElementById('togglePassword');
+    const togglePass = document.getElementById('togglePass');
     const passwordInput = document.getElementById('password');
     const loginForm = document.getElementById('loginForm');
-    const forgotLink = document.getElementById('forgotLink');
-    const registerLink = document.getElementById('registerLink');
 
-    toggleBtn.addEventListener('click', () => {
-      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    togglePass.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      togglePass.textContent = isHidden ? '🙈' : '👁️';
     });
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      alert(`Login dikirim untuk username: ${username}`);
-    });
-
-    forgotLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Fitur Lupa Password diklik.');
-    });
-
-    registerLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Fitur Daftar akun baru diklik.');
+      const user = document.getElementById('username').value.trim();
+      alert('Login berhasil diproses untuk: ' + user);
     });
   </script>
 </body>
