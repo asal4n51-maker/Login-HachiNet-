@@ -1,0 +1,98 @@
+import React, { useMemo, useState } from 'react';
+import { Search } from 'lucide-react';
+import type { ActivityLog } from '../../types/isp.ts';
+
+interface AuditTrailViewProps {
+  activityLogs: ActivityLog[];
+}
+
+export default function AuditTrailView({ activityLogs }: AuditTrailViewProps) {
+  const [logSearch, setLogSearch] = useState('');
+  const [logCategory, setLogCategory] = useState<'Semua' | ActivityLog['category']>('Semua');
+
+  const filteredLogs = useMemo(() => {
+    const q = logSearch.trim().toLowerCase();
+    return activityLogs.filter((log) => {
+      if (logCategory !== 'Semua' && log.category !== logCategory) return false;
+      if (!q) return true;
+      return (
+        log.action.toLowerCase().includes(q) ||
+        log.user.toLowerCase().includes(q) ||
+        log.category.toLowerCase().includes(q)
+      );
+    });
+  }, [activityLogs, logSearch, logCategory]);
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 lg:flex-row lg:items-center">
+        <div>
+          <h2 className="font-display text-xl font-extrabold text-slate-900">
+            Audit Trail &amp; Log Aktivitas Sistem
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Rekaman setiap aksi registrasi, perubahan MikroTik PPPoE, pelunasan invoice, dan
+            broadcast gateway.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={logSearch}
+              onChange={(e) => setLogSearch(e.target.value)}
+              placeholder="Cari aktivitas atau operator..."
+              className="w-60 rounded-lg border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 outline-none focus:border-amber-500 focus:bg-white"
+            />
+          </div>
+
+          <select
+            aria-label="Filter kategori audit"
+            value={logCategory}
+            onChange={(e) => setLogCategory(e.target.value as 'Semua' | ActivityLog['category'])}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-amber-500"
+          >
+            <option value="Semua">Semua Kategori</option>
+            <option value="Registrasi">Registrasi</option>
+            <option value="MikroTik">MikroTik</option>
+            <option value="Billing">Billing</option>
+            <option value="Gateway">Gateway</option>
+            <option value="Tiket">Tiket</option>
+            <option value="Jaringan">Jaringan</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full border-collapse text-left text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 text-slate-500">
+              <th className="px-3 py-3 font-semibold">Waktu</th>
+              <th className="px-3 py-3 font-semibold">Operator</th>
+              <th className="px-3 py-3 font-semibold">Kategori</th>
+              <th className="px-3 py-3 font-semibold">Aktivitas</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {filteredLogs.map((log) => (
+              <tr key={log.id} className="hover:bg-slate-50/70">
+                <td className="whitespace-nowrap px-3 py-3 font-mono text-slate-500 tabular-nums">
+                  {log.time}
+                </td>
+                <td className="whitespace-nowrap px-3 py-3 font-mono font-semibold text-amber-700">
+                  {log.user}
+                </td>
+                <td className="whitespace-nowrap px-3 py-3 font-semibold text-slate-700">
+                  {log.category}
+                </td>
+                <td className="px-3 py-3 text-slate-700">{log.action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
