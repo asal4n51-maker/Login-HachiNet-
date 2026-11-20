@@ -1,0 +1,161 @@
+import React, { useMemo } from 'react';
+import { MessageSquare, Send } from 'lucide-react';
+import type { Client, WaSchedule } from '../../types/isp.ts';
+
+interface WaGatewayViewProps {
+  clients: Client[];
+  waTemplate: string;
+  setWaTemplate: (val: string) => void;
+  waSchedules: WaSchedule[];
+  handleToggleWaSchedule: (schedule: WaSchedule) => void;
+  handleBroadcastWa: (onlyUnpaid: boolean) => void;
+  isSendingWa: boolean;
+}
+
+export default function WaGatewayView({
+  clients,
+  waTemplate,
+  setWaTemplate,
+  waSchedules,
+  handleToggleWaSchedule,
+  handleBroadcastWa,
+  isSendingWa,
+}: WaGatewayViewProps) {
+  const unpaidCount = clients.filter((c) => c.statusBayar === 'Belum Lunas').length;
+
+  const waPreviewText = useMemo(() => {
+    const sample = clients[0];
+    if (!sample) return waTemplate;
+    return waTemplate
+      .replaceAll('[Nama Pelanggan]', sample.name)
+      .replaceAll('[Paket]', sample.paket)
+      .replaceAll('[Harga]', `Rp ${sample.harga.toLocaleString('id-ID')}`);
+  }, [waTemplate, clients]);
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+        <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="font-display text-xl font-extrabold text-slate-900">
+              WhatsApp Billing Gateway (Otomatis)
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Kirim pengingat tagihan server listrik (tanggal 10) &amp; bandwidth MyRepublic
+              (tanggal 15) serta tagihan pelanggan secara otomatis.
+            </p>
+          </div>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2 font-mono text-xs font-semibold text-emerald-800 whitespace-nowrap shrink-0">
+            Session Connected: +62 812-3456-7890
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="wa-template"
+                className="mb-1.5 block text-xs font-semibold text-slate-600"
+              >
+                Template Pesan Broadcast
+              </label>
+              <textarea
+                id="wa-template"
+                rows={6}
+                value={waTemplate}
+                onChange={(e) => setWaTemplate(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-sm leading-relaxed text-slate-900 outline-none focus:border-amber-500 focus:bg-white"
+              />
+              <p className="mt-1.5 text-xs text-slate-500">
+                Variabel tersedia: <code>[Nama Pelanggan]</code>, <code>[Paket]</code>,{' '}
+                <code>[Harga]</code>
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                <MessageSquare className="h-3.5 w-3.5" />
+                Pratinjau Pesan (Contoh: {clients[0]?.name || 'Pelanggan'})
+              </div>
+              <pre className="whitespace-pre-wrap font-sans text-xs leading-relaxed text-slate-700">
+                {waPreviewText}
+              </pre>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                disabled={isSendingWa}
+                onClick={() => handleBroadcastWa(false)}
+                className="inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
+              >
+                <Send className="h-3.5 w-3.5" />
+                Kirim ke Semua ({clients.length})
+              </button>
+              <button
+                type="button"
+                disabled={isSendingWa || unpaidCount === 0}
+                onClick={() => handleBroadcastWa(true)}
+                className="inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-bold text-slate-800 transition-colors hover:bg-slate-50 disabled:opacity-50"
+              >
+                Kirim Belum Lunas ({unpaidCount})
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <h3 className="mb-3 text-sm font-bold text-slate-900">Jadwal Pengingat Otomatis</h3>
+              <div className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+                {waSchedules.map((sch) => (
+                  <div
+                    key={sch.id}
+                    className="flex items-center justify-between gap-4 px-4 py-3.5"
+                  >
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">{sch.label}</div>
+                      <div className="mt-0.5 text-xs text-slate-500">
+                        {sch.tanggal} · {sch.waktu} · Terakhir: {sch.terakhirKirim}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleWaSchedule(sch)}
+                      className={`whitespace-nowrap shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        sch.aktif
+                          ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {sch.aktif ? 'Aktif' : 'Nonaktif'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-bold text-slate-900">Penerima Reminder Terdaftar</h3>
+              <div className="max-h-56 divide-y divide-slate-100 overflow-y-auto rounded-xl border border-slate-200">
+                {clients.map((client) => (
+                  <div
+                    key={client.docId}
+                    className="flex items-center justify-between gap-3 px-4 py-2.5"
+                  >
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">{client.name}</div>
+                      <div className="font-mono text-[11px] text-slate-500">
+                        {client.telepon} · {client.paket}
+                      </div>
+                    </div>
+                    <span className="text-xs font-semibold text-emerald-700">Active WhatsApp</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
