@@ -15,10 +15,9 @@
     body {
       min-height: 100vh;
       background-color: #040914;
-      /* Menggunakan gambar sebagai tekstur cahaya latar belakang */
-      background-image: 
-        radial-gradient(circle at 50% 35%, rgba(250, 204, 21, 0.12), transparent 55%),
-        linear-gradient(rgba(4, 9, 20, 0.55), rgba(4, 9, 20, 0.72)),
+      background-image:
+        radial-gradient(circle at 50% 30%, rgba(250, 204, 21, 0.14), transparent 55%),
+        linear-gradient(rgba(4, 9, 20, 0.45), rgba(4, 9, 20, 0.65)),
         url('background-hachinet.jpg');
       background-size: cover;
       background-position: center;
@@ -30,43 +29,41 @@
       color: #ffffff;
     }
 
-    /* Kartu Glassmorphism persis seperti bingkai di gambar referensi */
+    /* Kartu kaca semi-transparan: terlihat jelas batas & kilau kacanya, tapi tetap tembus pandang */
     .glass-card {
       width: 100%;
       max-width: 380px;
-      padding: 32px 26px 28px;
+      padding: 30px 24px 26px;
       border-radius: 22px;
       background: linear-gradient(
         160deg,
-        rgba(22, 34, 58, 0.68) 0%,
-        rgba(10, 17, 32, 0.82) 100%
+        rgba(15, 25, 45, 0.42) 0%,
+        rgba(8, 14, 28, 0.56) 100%
       );
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1.5px solid rgba(255, 255, 255, 0.32);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, 0.34);
       box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.75),
-        inset 0 0 24px rgba(250, 204, 21, 0.12),
-        0 0 18px rgba(59, 130, 246, 0.25);
+        0 18px 42px rgba(0, 0, 0, 0.65),
+        inset 0 0 20px rgba(250, 204, 21, 0.1),
+        0 0 16px rgba(59, 130, 246, 0.22);
       text-align: center;
       position: relative;
       overflow: hidden;
     }
 
-    /* Efek kilau cahaya emas di bagian atas kartu */
     .glass-card::before {
       content: "";
       position: absolute;
-      top: -40px;
+      top: -45px;
       left: 50%;
       transform: translateX(-50%);
-      width: 220px;
+      width: 230px;
       height: 120px;
-      background: radial-gradient(circle, rgba(253, 224, 71, 0.45) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(253, 224, 71, 0.38) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    /* Ikon Lebah & Not Balok Bercahaya */
     .logo-header {
       position: relative;
       display: flex;
@@ -80,7 +77,6 @@
       font-size: 20px;
       color: #fde047;
       text-shadow: 0 0 10px rgba(250, 204, 21, 0.9);
-      opacity: 0.9;
     }
 
     .bee-badge {
@@ -89,31 +85,30 @@
       filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.95));
     }
 
-    /* Judul Utama HACHI NET WARNASARI */
+    /* Ukuran judul diperbesar sedikit */
     .title-main {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 900;
       letter-spacing: 1.2px;
-      line-height: 1.1;
+      line-height: 1.08;
       color: #fef08a;
       text-shadow:
-        0 0 16px rgba(250, 204, 21, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.9);
+        0 0 16px rgba(250, 204, 21, 0.72),
+        0 3px 8px rgba(0, 0, 0, 0.92);
     }
 
     .title-sub {
-      font-size: 25px;
+      font-size: 28px;
       font-weight: 900;
-      letter-spacing: 1.5px;
-      line-height: 1.15;
+      letter-spacing: 1.4px;
+      line-height: 1.12;
       color: #fde047;
       margin-bottom: 24px;
       text-shadow:
-        0 0 16px rgba(250, 204, 21, 0.65),
-        0 2px 6px rgba(0, 0, 0, 0.9);
+        0 0 16px rgba(250, 204, 21, 0.68),
+        0 3px 8px rgba(0, 0, 0, 0.92);
     }
 
-    /* Form Input */
     .form-group {
       text-align: left;
       margin-bottom: 15px;
@@ -123,25 +118,29 @@
       display: block;
       font-size: 13.5px;
       font-weight: 600;
-      color: #f1f5f9;
+      color: #f8fafc;
       margin-bottom: 6px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
     }
 
+    /* Kotak input semi-transparan agar terlihat jelas namun tetap tembus latar */
     .input-wrapper {
       display: flex;
       align-items: center;
       height: 42px;
       border-radius: 8px;
-      background: rgba(203, 213, 225, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.38);
       overflow: hidden;
       transition: all 0.2s ease;
     }
 
     .input-wrapper:focus-within {
-      background: #ffffff;
-      border-color: #60a5fa;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+      background: rgba(255, 255, 255, 0.34);
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
     }
 
     .input-icon {
@@ -150,7 +149,7 @@
       align-items: center;
       justify-content: center;
       font-size: 15px;
-      color: #475569;
+      color: #f8fafc;
       flex-shrink: 0;
     }
 
@@ -160,13 +159,13 @@
       border: none;
       background: transparent;
       font-size: 14px;
-      color: #0f172a;
+      color: #ffffff;
       outline: none;
       padding-right: 10px;
     }
 
     .input-wrapper input::placeholder {
-      color: #475569;
+      color: rgba(241, 245, 249, 0.78);
     }
 
     .toggle-btn {
@@ -176,51 +175,61 @@
       background: transparent;
       cursor: pointer;
       font-size: 15px;
-      color: #475569;
+      color: #f8fafc;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* Tombol Masuk Sistem */
+    /* Tombol semi-transparan bercahaya biru */
     .btn-submit {
       width: 100%;
       height: 44px;
       margin-top: 8px;
-      border: 1px solid rgba(147, 197, 253, 0.4);
+      border: 1px solid rgba(147, 197, 253, 0.55);
       border-radius: 8px;
-      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      background: linear-gradient(
+        180deg,
+        rgba(37, 99, 235, 0.78) 0%,
+        rgba(29, 78, 216, 0.85) 100%
+      );
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       color: #ffffff;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
-      transition: filter 0.15s ease, transform 0.1s ease;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+      transition: filter 0.15s ease, transform 0.1s ease, background 0.2s ease;
     }
 
     .btn-submit:hover {
-      filter: brightness(1.1);
+      background: linear-gradient(
+        180deg,
+        rgba(37, 99, 235, 0.92) 0%,
+        rgba(29, 78, 216, 0.96) 100%
+      );
     }
 
     .btn-submit:active {
       transform: scale(0.99);
     }
 
-    /* Link Bawah */
     .footer-links {
       margin-top: 18px;
       font-size: 13px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
     }
 
     .forgot-link {
       display: inline-block;
-      color: #cbd5e1;
+      color: #e2e8f0;
       text-decoration: underline;
       margin-bottom: 10px;
     }
 
     .register-row {
-      color: #cbd5e1;
+      color: #e2e8f0;
     }
 
     .register-row a {
